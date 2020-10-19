@@ -9,7 +9,7 @@ export const appRoutes: Routes = [
     pathMatch: 'full' // we need to specify this since the default redirecTo's strategy is prefix but every path has '' 
   },
 
-  // * using lazy:
+  // * using lazy loading:
   {
     path: 'recipes',
     loadChildren: () => import('./recipes/recipes.module')
