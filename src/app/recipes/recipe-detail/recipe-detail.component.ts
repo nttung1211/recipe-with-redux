@@ -1,30 +1,13 @@
-// import { Component, OnInit, Input } from '@angular/core';
-// import { Recipe } from '../recipe.model';
-
-// @Component({
-//   selector: 'app-recipe-detail',
-//   templateUrl: './recipe-detail.component.html',
-//   styleUrls: ['./recipe-detail.component.css']
-// })
-// export class RecipeDetailComponent implements OnInit {
-
-//   @Input('thisCurrentRecipe') currentRecipe: Recipe; 
-//   // isOpen = false;
-
-//   constructor() { }
-
-//   ngOnInit(): void {
-//   }
-
-// }
-
-/* AFTER ADD SERVICE */
 import { Component, OnInit, Input } from '@angular/core';
 
 import { Recipe } from '../recipe.model';
-import { IngredientService } from 'src/app/shopping-list/ingredient.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RecipeService } from '../recipe.service';
+import { Store } from '@ngrx/store';
+import * as ShoppingListActions from 'src/app/shopping-list/store/shopping-list.actions';
+import { AppState } from 'src/app/store/app.reducer';
+import { map, switchMap } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-recipe-detail',
@@ -33,26 +16,35 @@ import { RecipeService } from '../recipe.service';
 })
 export class RecipeDetailComponent implements OnInit {
   recipe: Recipe;
+  id: number;
   
   constructor(
     private recipeService: RecipeService,
-    private ingredientService: IngredientService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private store: Store<AppState>
     ) { }
 
   ngOnInit(): void {
-    this.activatedRoute.params.subscribe(
-      (params: Params) => {
-        this.recipe = this.recipeService.getRecipe(+params['id']) ;
+    this.activatedRoute.params.pipe(
+      switchMap(
+        (params: Params) => {
+          this.id = +params['id'];
+          return this.store.select('recipes');
+        }
+      ),
+      map(
+        recipeState => recipeState.recipes.find(recipe => recipe.id == this.id)
+      )
+    ).subscribe(
+      recipe => {
+        this.recipe = recipe;
       }
     );
   }
   
   onSendToSL() {
-    this.recipe.ingredients.forEach(ingredient => {
-      this.ingredientService.add(ingredient);
-    })
+    this.store.dispatch(new ShoppingListActions.AddIngredients(this.recipe.ingredients));
   }
 
   onDelete() {

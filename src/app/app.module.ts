@@ -9,9 +9,13 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { CoreModule } from './core.module';
 import { SharedModule } from './shared/shared.module';
-import { AuthModule } from './auth/auth.module';
-// import { RecipesModule } from './recipes/recipes.module';
-// import { ShoppingListModule } from './shopping-list/shopping-list.module';
+import { StoreModule } from '@ngrx/store';
+import { appReducer } from './store/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtools, StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { AuthEffects } from './auth/store/auth.effects';
+import { environment } from 'src/environments/environment';
+
 
 @NgModule({
   declarations: [ 
@@ -24,7 +28,9 @@ import { AuthModule } from './auth/auth.module';
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule, // this just provide services hence we only need to import here in the app module
-
+    StoreModule.forRoot(appReducer),
+    EffectsModule.forRoot([AuthEffects]),
+    StoreDevtoolsModule.instrument({logOnly: environment.production}),
     CoreModule,
     SharedModule,
     

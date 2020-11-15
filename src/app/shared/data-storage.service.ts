@@ -4,6 +4,9 @@ import { RecipeService } from '../recipes/recipe.service';
 import { Recipe } from '../recipes/recipe.model';
 import { map, tap, take, exhaustMap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/app.reducer';
+import * as RecipeActions from '../recipes/store/recipe.actions';
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService implements OnInit {
@@ -11,7 +14,7 @@ export class DataStorageService implements OnInit {
   constructor(
     private http: HttpClient,
     private recipeService: RecipeService,
-    private authService: AuthService
+    private store: Store<AppState>
   ) { }
 
   ngOnInit() {
@@ -61,8 +64,7 @@ export class DataStorageService implements OnInit {
         // add  dummy ingredients so that we won't get error when send them to the shopping list
         tap(
           recipes => {
-            console.log(recipes);
-            this.recipeService.setRecipes(recipes);
+            this.store.dispatch(new RecipeActions.SetRecipes({recipes}));
           }
         )
       );

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DataStorageService } from './shared/data-storage.service';
-import { Subject } from 'rxjs';
-import { AuthService } from './auth/auth.service';
+import { Store } from '@ngrx/store';
+import { AppState } from './store/app.reducer';
+import * as AuthActions from './auth/store/auth.actions';
 
 @Component({
   selector: 'app-root',
@@ -10,12 +10,10 @@ import { AuthService } from './auth/auth.service';
 })
 export class AppComponent implements OnInit {
   constructor(
-    private dataStorageService: DataStorageService,
-    private authService: AuthService
+    private store: Store<AppState>
   ) {}
 
   ngOnInit() {
-    // this.dataStorageService.fetchRecipes();
-    this.authService.autoLogin();
+    this.store.dispatch(new AuthActions.AutoLogin());
   }
 }

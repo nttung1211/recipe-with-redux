@@ -9,7 +9,7 @@
 <div class="row">
   <div class="col-xs-12">
     <app-recipe-item 
-    *ngFor="let recipe of recipes" [thisRecipe]="recipe"
+    *ngFor="let recipe of (recipes | async).recipes" [thisRecipe]="recipe"
     ></app-recipe-item>
   </div>
 </div>
